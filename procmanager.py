@@ -30,6 +30,28 @@ class ShowStatus(Command):
 			raise Exception("No pid passed!")
 		self.ps = map(lambda pid: psutil.Process(int(pid)), args);
 
+class ListVars(Command):
+    def __init__(self, args):
+        self.args = args
+
+    def run(self):
+        keys = []
+        values = []
+        with open("/proc/" + self.args[0] + "/environ") as f:
+            vars = f.read().split('=')
+            for var in vars:
+                val = ''
+                key = ''
+                for v in var:
+                    if v.isupper():
+                        key += v
+                    else:
+                        val += v
+                keys.append(key)
+                if val:
+                    values.append(val.strip('\x00_'))
+        print(dict(zip(keys, values)))
+
 	def run(self):
 		print([p.status() for p in self.ps])
 
@@ -53,6 +75,7 @@ commands = {
     "list" : lambda args: ListProcs(args),
     "show_status": lambda args: ShowStatus(args), 
     "send_signal": lambda pid: SendSignal(pid) // added by Marius
+    "env"  : lambda args: ListVars(args)
     "memory_usage": lambda args: showMem(args)
 }
 
