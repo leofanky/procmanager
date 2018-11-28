@@ -32,11 +32,28 @@ class ShowStatus(Command):
 
 	def run(self):
 		print([p.status() for p in self.ps])
-                
+
+class showMem:
+    def __init__(self, args):
+        self.arg = args
+
+    def run(self):
+        DIR = '/proc/'
+        process = self.arg[0]
+        path = DIR + process + '/status'
+        exst = False
+        for n,line in enumerate(open(path)):
+            if line[:6] == 'VmSize':
+                exst = True
+                print (line[10:])
+        if not exst: 
+                print ('No status')    
+                  
 commands = {
     "list" : lambda args: ListProcs(args),
     "show_status": lambda args: ShowStatus(args), 
     "send_signal": lambda pid: SendSignal(pid) // added by Marius
+    "memory_usage": lambda args: showMem(args)
 }
 
 def get_command():
