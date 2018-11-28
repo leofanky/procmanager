@@ -28,7 +28,7 @@ class ShowStatus(Command):
 	def __init__(self, args):
 		if len(args) == 0:
 			raise Exception("No pid passed!")
-		self.ps = map(lambda pid: psutil.Process(pid), args);
+		self.ps = map(lambda pid: psutil.Process(int(pid)), args);
 
 	def run(self):
 		print([p.status() for p in self.ps])
