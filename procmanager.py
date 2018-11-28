@@ -16,6 +16,13 @@ class ListProcs(Command):
         for d in os.listdir("/proc"):
             if os.path.isdir(proc + "/" + d) and d.isdigit():
                 print(d)
+                
+class SendSignal(Command): // added by Marius
+    def __init__(self, args):
+        pass
+
+    def run(self, pid):
+        os.kill(pid, signal.SIGUSR1)
 
 class ShowStatus(Command):
 	def __init__(self, args):
@@ -28,7 +35,8 @@ class ShowStatus(Command):
                 
 commands = {
     "list" : lambda args: ListProcs(args),
-    "show_status": lambda args: ShowStatus(args) 
+    "show_status": lambda args: ShowStatus(args), 
+    "send_signal": lambda pid: SendSignal(pid) // added by Marius
 }
 
 def get_command():
