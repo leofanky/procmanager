@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import psutil
 
 class Command():
     def __init__(self, args):
@@ -16,67 +15,17 @@ class ListProcs(Command):
         for d in os.listdir("/proc"):
             if os.path.isdir(proc + "/" + d) and d.isdigit():
                 print(d)
-                
-class SendSignal(Command): // added by Marius
-    def __init__(self, args):
-        pass
-
-    def run(self, pid):
-        os.kill(pid, signal.SIGUSR1)
-
-class ShowStatus(Command):
+class limits():
 	def __init__(self, args):
-		if len(args) == 0:
-			raise Exception("No pid passed!")
-		self.ps = map(lambda pid: psutil.Process(int(pid)), args);
-
-class ListVars(Command):
-    def __init__(self, args):
-        self.args = args
-
-    def run(self):
-        keys = []
-        values = []
-        with open("/proc/" + self.args[0] + "/environ") as f:
-            vars = f.read().split('=')
-            for var in vars:
-                val = ''
-                key = ''
-                for v in var:
-                    if v.isupper():
-                        key += v
-                    else:
-                        val += v
-                keys.append(key)
-                if val:
-                    values.append(val.strip('\x00_'))
-        print(dict(zip(keys, values)))
-
+		self.arg = args[0]
+	
 	def run(self):
-		print([p.status() for p in self.ps])
-
-class showMem:
-    def __init__(self, args):
-        self.arg = args
-
-    def run(self):
-        DIR = '/proc/'
-        process = self.arg[0]
-        path = DIR + process + '/status'
-        exst = False
-        for n,line in enumerate(open(path)):
-            if line[:6] == 'VmSize':
-                exst = True
-                print (line[10:])
-        if not exst: 
-                print ('No status')    
-                  
+		for line in open(f"/proc/" + self.arg + "/limits").readlines():
+			print(line.split('\t')
+			
 commands = {
-    "list" : lambda args: ListProcs(args),
-    "show_status": lambda args: ShowStatus(args), 
-    "send_signal": lambda pid: SendSignal(pid) // added by Marius
-    "env"  : lambda args: ListVars(args)
-    "memory_usage": lambda args: showMem(args)
+    "list" : lambda args: ListProcs(args) ,
+    "limits" : lambda args : limits (args)
 }
 
 def get_command():
