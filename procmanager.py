@@ -98,4 +98,4 @@ def get_command():
 
 while True:
     cmd = get_command()
-cmd.run()
+    cmd.run()
